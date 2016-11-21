@@ -13,11 +13,9 @@ df$region = df$country
 map.world = map_data(map='world')
 map.world = merge(df,map.world, by='region',all.y=TRUE )
 map.world = map.world[order(map.world$order), ]
-map.world$beer_servings[is.na(map.world$beer_servings)] = 0
-map.world$spirit_servings[is.na(map.world$spirit_servings)]=0
-map.world$wine_servings[is.na(map.world$wine_servings)]=0
-map.world$total_litres_of_pure_alcohol[is.na(map.world$total_litres_of_pure_alcohol)]=0
+#Countries with no data are omitted
 
+#theme for all graphs
 mytheme = function(){
   theme(panel.grid.major = element_blank(), 
         panel.grid.minor = element_blank(),
@@ -38,6 +36,7 @@ mytheme = function(){
   )
 }
 
+#World plot for beer consupmtion
 beer_plot=ggplot() + 
   geom_map(data = map.world,map = map.world,colour='white',size=.1, aes(
     map_id = region,
@@ -50,7 +49,7 @@ beer_plot=ggplot() +
   mytheme()
 ggsave(filename = 'beer_plot.png',plot = beer_plot,dpi = 300)
 
-
+# World plot for wine Consumption
 wine_plot=ggplot() + 
   geom_map(data = map.world,map = map.world,colour='white',size=.1, aes(
     map_id = region,
@@ -63,6 +62,7 @@ wine_plot=ggplot() +
   mytheme()
 ggsave(filename = 'wine_plot.png',plot=wine_plot,dpi=300)
 
+#World Plot for spirit consumption
 spirit_plot=ggplot() + 
   geom_map(data = map.world,map = map.world,colour='white',size=.1, aes(
     map_id = region,
@@ -75,6 +75,7 @@ spirit_plot=ggplot() +
   mytheme()
 ggsave('spirit_plot.png',spirit_plot,dpi=300)
 
+#World plot for pure alcohol
 pure_alc_plot = ggplot() + 
   geom_map(data = map.world,map = map.world,colour='white',size=.1, aes(
     map_id = region,
@@ -103,11 +104,12 @@ total_alcohol_plot = ggplot()+
   mytheme()+ scale_fill_gradientn(colours = terrain.colors(10),name ='Total Alcohol Servings \nPer Person, 2010')
 ggsave('total_alc_plot.png',total_alcohol_plot,dpi=300)
 
-
+#Reshape data for bar plots
 alf = map.world[2:6]
 alf$country=as.character(alf$country)
 alf=alf[!is.na(alf$country),]
 alf_lf = unique(melt(alf))
+
 library(dplyr)
 bar_dat = alf_lf %>% group_by(country) %>%
   mutate(Total = sum(value)) 
