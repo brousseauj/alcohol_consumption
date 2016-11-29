@@ -183,4 +183,30 @@ alldat = merge(gdp,alf_lf,by='country')
 
 alldat=alldat %>% group_by(country) %>%
   mutate(Total = sum(value)) 
-ggplot(alldat,aes(x=))
+
+alldat$variable=factor(alldat$variable,levels = c('beer_servings','spirit_servings',
+                                                    'wine_servings','total_litres_of_pure_alcohol'),
+                        labels = c('Beer','Spirit','Wine','Pure Alcohol'))
+
+scatter_all=ggplot(alldat,aes(x=log(X2010),y=value,color=variable))+
+  geom_point(size=.5)+
+  stat_smooth(method = "lm", se = FALSE,color='black')+
+  facet_wrap(~variable,scales = 'free')+xlab('log(Gross Domestic Product)')+
+  ylab('Number of Servings, Per Person')+theme_dark()+
+  theme(legend.position="none",text=element_text(face = 'bold',family = 'Helvetica'))+
+  scale_colour_brewer(palette = 'OrRd')
+scatter_all
+
+## cor
+
+beer_cor =alldat[alldat$variable=='Beer',]
+beer_R = cor(log(beer_cor$X2010),beer_cor$value,use = 'complete.obs')
+
+wine_cor =alldat[alldat$variable=='Wine',]
+wine_R = cor(log(wine_cor$X2010),wine_cor$value,use = 'complete.obs')
+
+spirit_cor =alldat[alldat$variable=='Spirit',]
+spirit_R = cor(log(spirit_cor$X2010),spirit_cor$value,use = 'complete.obs')
+
+PureAlcohol_cor =alldat[alldat$variable=='Pure Alcohol',]
+PureAlcohol_R = cor(log(PureAlcohol_cor$X2010),PureAlcohol_cor$value,use = 'complete.obs')
